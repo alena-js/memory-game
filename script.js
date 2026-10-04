@@ -62,10 +62,38 @@ counters.append(movesCounter, pairsCounter);
 const gameBoard = document.createElement('div');
 gameBoard.classList.add('game-board');
 
+const modalOverlay = document.createElement('div');
+modalOverlay.classList.add('modal-overlay');
+
+const modal = document.createElement('div');
+modal.classList.add('modal');
+
+const modalTitle = document.createElement('h2');
+modalTitle.textContent = 'You won!';
+
+const modalMessage = document.createElement('p');
+
+const modalNewGameButton = document.createElement('button');
+modalNewGameButton.type = 'button';
+modalNewGameButton.textContent = 'New Game';
+
+const modalCloseButton = document.createElement('button');
+modalCloseButton.type = 'button';
+modalCloseButton.textContent = 'Close';
+
+modal.append(
+    modalTitle,
+    modalMessage,
+    modalNewGameButton,
+    modalCloseButton,
+);
+
+modalOverlay.append(modal);
+
 main.append(counters, gameBoard);
 
 app.append(header, main);
-document.body.append(app);
+document.body.append(app, modalOverlay);
 
 let firstCard = null;
 let secondCard = null;
@@ -73,16 +101,53 @@ let lockBoard = false;
 let moves = 0;
 let matchedPairs = 0;
 let closeTimer = null;
+const LEADERBOARD_KEY = 'memory-game-results';
 
 function updateCounters() {
     movesCounter.textContent = `Moves: ${moves}`;
     pairsCounter.textContent = `Pairs: ${matchedPairs} / 8`;
 }
 
+function getResults() {
+    return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+}
+
+function saveResult() {
+    const results = getResults();
+
+    results.push({
+        moves,
+        date: new Date().toISOString(),
+    });
+
+    results.sort((a, b) => {
+        if (a.moves !== b.moves) {
+            return a.moves - b.moves;
+        }
+
+        return new Date(a.date) - new Date(b.date);
+    });
+
+    localStorage.setItem(
+        LEADERBOARD_KEY,
+        JSON.stringify(results.slice(0, 10)),
+    );
+}
+
 function resetCards() {
     firstCard = null;
     secondCard = null;
     lockBoard = false;
+}
+
+function openModal() {
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
 }
 
 function createCards() {
@@ -128,6 +193,56 @@ function startNewGame() {
     createCards();
 }
 
+function showVictoryModal() {
+    modalMessage.textContent = `You won in ${moves} moves!`;
+    openModal();
+}
+
+function showLeaderboard() {
+    modalTitle.textContent = 'Leaderboard';
+
+    const results = getResults();
+
+    modalMessage.replaceChildren();
+
+    if (results.length === 0) {
+        modalMessage.textContent = 'No results yet.';
+        openModal();
+        return;
+    }
+
+    const table = document.createElement('table');
+
+    const headerRow = document.createElement('tr');
+
+    ['Place', 'Moves', 'Date'].forEach((text) => {
+        const th = document.createElement('th');
+        th.textContent = text;
+        headerRow.append(th);
+    });
+
+    table.append(headerRow);
+
+    results.forEach((result, index) => {
+        const row = document.createElement('tr');
+
+        const place = document.createElement('td');
+        place.textContent = String(index + 1);
+
+        const resultMoves = document.createElement('td');
+        resultMoves.textContent = String(result.moves);
+
+        const date = document.createElement('td');
+        date.textContent = new Date(result.date).toLocaleDateString('ru-RU');
+
+        row.append(place, resultMoves, date);
+        table.append(row);
+    });
+
+    modalMessage.append(table);
+    openModal();
+}
+
 function handleCardClick(event) {
     const card = event.target.closest('.card');
 
@@ -163,6 +278,12 @@ function handleCardClick(event) {
         updateCounters();
 
         resetCards();
+
+        if (matchedPairs === 8) {
+            saveResult();
+            showVictoryModal();
+        }
+
         return;
     }
 
@@ -176,6 +297,28 @@ function handleCardClick(event) {
 }
 
 gameBoard.addEventListener('click', handleCardClick);
+
 newGameButton.addEventListener('click', startNewGame);
+
+leaderboardButton.addEventListener('click', showLeaderboard);
+
+modalCloseButton.addEventListener('click', closeModal);
+
+modalNewGameButton.addEventListener('click', () => {
+    closeModal();
+    startNewGame();
+});
+
+modalOverlay.addEventListener('click', (event) => {
+    if (event.target === modalOverlay) {
+        closeModal();
+    }
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        closeModal();
+    }
+});
 
 createCards();

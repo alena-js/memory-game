@@ -28,7 +28,7 @@ body {
 }
 
 .main {
-    max-width: 900px;
+    max-width: 800px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -43,7 +43,7 @@ body {
 .game-board {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    gap: 12px;
 }
 
 .card {
@@ -97,4 +97,33 @@ body {
 .card.open .card-content,
 .card.matched .card-content {
     transform: rotateY(0);
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgb(0 0 0 / 60%);
+    z-index: 100;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    width: min(400px, 100%);
+    padding: 30px;
+    border-radius: 16px;
+    background: white;
+    text-align: center;
+}
+
+.modal button {
+    margin: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
 }
