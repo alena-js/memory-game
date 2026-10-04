@@ -4,4 +4,44 @@
 
 body {
     margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    min-height: 100vh;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.header h1 {
+    margin-right: auto;
+}
+
+.header button {
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+.main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.counters {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 20px;
+}
+
+.game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
 }
