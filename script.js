@@ -1,3 +1,31 @@
+const cardImages = [
+    './assets/cherry.svg',
+    './assets/banana.svg',
+    './assets/eggplant.svg',
+    './assets/lime.svg',
+    './assets/peach.svg',
+    './assets/popcorn.svg',
+    './assets/strawberry.svg',
+    './assets/watermelon.svg',
+];
+
+const cards = [...cardImages, ...cardImages];
+
+function shuffle(array) {
+    const shuffledArray = [...array];
+
+    for (let i = shuffledArray.length - 1; i > 0; i -= 1) {
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+
+        [shuffledArray[i], shuffledArray[randomIndex]] = [
+            shuffledArray[randomIndex],
+            shuffledArray[i],
+        ];
+    }
+
+    return shuffledArray;
+}
+
 const app = document.createElement('div');
 app.classList.add('app');
 
@@ -38,3 +66,85 @@ main.append(counters, gameBoard);
 
 app.append(header, main);
 document.body.append(app);
+
+function createCards() {
+    const shuffledCards = shuffle(cards);
+
+    shuffledCards.forEach((image) => {
+        const card = document.createElement('button');
+
+        card.type = 'button';
+        card.classList.add('card');
+        card.dataset.image = image;
+
+        const cardBack = document.createElement('span');
+        cardBack.classList.add('card-back');
+        cardBack.textContent = '?';
+
+        const cardContent = document.createElement('span');
+        cardContent.classList.add('card-content');
+
+        const imageElement = document.createElement('img');
+        imageElement.src = image;
+        imageElement.alt = 'Card image';
+
+        cardContent.append(imageElement);
+        card.append(cardBack, cardContent);
+        gameBoard.append(card);
+    });
+}
+
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+
+function resetCards() {
+    firstCard = null;
+    secondCard = null;
+    lockBoard = false;
+}
+
+function handleCardClick(event) {
+    const card = event.target.closest('.card');
+
+    if (!card) {
+        return;
+    }
+
+    if (
+        lockBoard
+        || card.classList.contains('open')
+        || card.classList.contains('matched')
+    ) {
+        return;
+    }
+
+    card.classList.add('open');
+
+    if (firstCard === null) {
+        firstCard = card;
+        return;
+    }
+
+    secondCard = card;
+    lockBoard = true;
+
+    if (firstCard.dataset.image === secondCard.dataset.image) {
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+
+        resetCards();
+        return;
+    }
+
+    setTimeout(() => {
+        firstCard.classList.remove('open');
+        secondCard.classList.remove('open');
+
+        resetCards();
+    }, 1000);
+}
+
+gameBoard.addEventListener('click', handleCardClick);
+
+createCards();
