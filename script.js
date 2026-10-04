@@ -67,7 +67,27 @@ main.append(counters, gameBoard);
 app.append(header, main);
 document.body.append(app);
 
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+let moves = 0;
+let matchedPairs = 0;
+let closeTimer = null;
+
+function updateCounters() {
+    movesCounter.textContent = `Moves: ${moves}`;
+    pairsCounter.textContent = `Pairs: ${matchedPairs} / 8`;
+}
+
+function resetCards() {
+    firstCard = null;
+    secondCard = null;
+    lockBoard = false;
+}
+
 function createCards() {
+    gameBoard.replaceChildren();
+
     const shuffledCards = shuffle(cards);
 
     shuffledCards.forEach((image) => {
@@ -94,21 +114,18 @@ function createCards() {
     });
 }
 
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
-let moves = 0;
-let matchedPairs = 0;
+function startNewGame() {
+    clearTimeout(closeTimer);
 
-function updateCounters() {
-    movesCounter.textContent = `Moves: ${moves}`;
-    pairsCounter.textContent = `Pairs: ${matchedPairs} / 8`;
-}
-
-function resetCards() {
+    closeTimer = null;
     firstCard = null;
     secondCard = null;
     lockBoard = false;
+    moves = 0;
+    matchedPairs = 0;
+
+    updateCounters();
+    createCards();
 }
 
 function handleCardClick(event) {
@@ -149,14 +166,16 @@ function handleCardClick(event) {
         return;
     }
 
-    setTimeout(() => {
+    closeTimer = setTimeout(() => {
         firstCard.classList.remove('open');
         secondCard.classList.remove('open');
 
+        closeTimer = null;
         resetCards();
     }, 1000);
 }
 
 gameBoard.addEventListener('click', handleCardClick);
+newGameButton.addEventListener('click', startNewGame);
 
 createCards();
