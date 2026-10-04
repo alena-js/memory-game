@@ -97,6 +97,13 @@ function createCards() {
 let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
+let moves = 0;
+let matchedPairs = 0;
+
+function updateCounters() {
+    movesCounter.textContent = `Moves: ${moves}`;
+    pairsCounter.textContent = `Pairs: ${matchedPairs} / 8`;
+}
 
 function resetCards() {
     firstCard = null;
@@ -127,11 +134,16 @@ function handleCardClick(event) {
     }
 
     secondCard = card;
+    moves += 1;
+    updateCounters();
     lockBoard = true;
 
     if (firstCard.dataset.image === secondCard.dataset.image) {
         firstCard.classList.add('matched');
         secondCard.classList.add('matched');
+
+        matchedPairs += 1;
+        updateCounters();
 
         resetCards();
         return;
