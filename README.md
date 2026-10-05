@@ -1,1 +1,1 @@
-# mempry-game
+# memory-game
