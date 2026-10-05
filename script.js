@@ -194,6 +194,7 @@ function startNewGame() {
 }
 
 function showVictoryModal() {
+    modalTitle.textContent = 'You won!';
     modalMessage.textContent = `You won in ${moves} moves!`;
     openModal();
 }
