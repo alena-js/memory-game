@@ -49,3 +49,11 @@ Memory Game is a classic card matching game. The goal is to find all 8 matching 
 
 ## Deployment
 The project is deployed using GitHub Pages.
+
+## Local development
+To run the project locally:
+1. Clone the repository:
+`git clone https://github.com/alena-js/memory-game.git`
+2. Open the project folder:
+`cd memory-game`
+3. Open `index.html` in a web browser
