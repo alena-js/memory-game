@@ -196,11 +196,13 @@ function startNewGame() {
 function showVictoryModal() {
     modalTitle.textContent = 'You won!';
     modalMessage.textContent = `You won in ${moves} moves!`;
+    modalNewGameButton.style.display = '';
     openModal();
 }
 
 function showLeaderboard() {
     modalTitle.textContent = 'Leaderboard';
+    modalNewGameButton.style.display = 'none';
 
     const results = getResults();
 
